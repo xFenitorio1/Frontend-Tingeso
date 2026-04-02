@@ -2,39 +2,41 @@ pipeline {
     agent any
 
     triggers {
-        pollSCM 'H/2 * * * *' // Revisa cambios cada 2 min
+        // Revisa GitHub cada 2 minutos
+        pollSCM 'H/2 * * * *' 
     }
 
     stages {
         stage('Checkout Front') {
             steps {
+                // Descarga el código del repo de Frontend
                 checkout scm
             }
         }
 
-        stage('Construir Imagen Docker') {
+        stage('Build Image') {
             steps {
                 script {
-                    echo "--> Construyendo imagen del Frontend..."
+                    echo "--> Construyendo imagen de Vite..."
                     // Construye la imagen usando el Dockerfile de la carpeta
-                    sh "docker build -t frontend-image:latest ."
+                    sh "docker build -t frontend-app:latest ."
                 }
             }
         }
 
-        stage('Desplegar Front') {
+        stage('Deploy Front') {
             steps {
                 script {
-                    echo "--> Actualizando solo el contenedor de Frontend..."
-                    // Usamos el comando específico para que no toque al Back ni a la DB
-                    // Si el docker-compose.yml está en esta carpeta:
-                    sh "docker-compose up -d --no-deps frontend"
+                    echo "--> Desplegando contenedor de Frontend..."
+                    // El comando 'up' refrescará solo el servicio frontend
+                    sh "docker-compose up -d --build frontend"
                 }
             }
         }
 
-        stage('Limpieza') {
+        stage('Clean Up') {
             steps {
+                // Borra versiones anteriores para no llenar tu disco
                 sh 'docker image prune -f'
             }
         }
