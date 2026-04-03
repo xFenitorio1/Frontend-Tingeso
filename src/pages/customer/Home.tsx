@@ -1,14 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, DollarSign } from 'lucide-react';
 import PackageCard from '../../components/customer/PackageCard';
-import { mockPackages } from '../../mocks/data';
+import api from '../../api/axios';
+import type { Package } from '../../types';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [priceRange, setPriceRange] = useState('');
+  const [packages, setPackages] = useState<Package[]>([]);
+
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        const response = await api.get('/api/packages');
+        const fetchedPackages: Package[] = response.data.map((pkg: any) => ({
+          id: pkg.id.toString(),
+          title: pkg.name,
+          destination: pkg.destination,
+          description: pkg.description,
+          basePrice: pkg.price,
+          spotsTotal: pkg.totalCapacity,
+          spotsLeft: pkg.availableSpots,
+          imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80',
+          includes: ['Vuelo aéreo', 'Alojamiento', 'Desayuno'],
+          status: pkg.status === 'AVAILABLE' ? 'Active' : pkg.status === 'SOLD_OUT' ? 'Sold Out' : 'Draft',
+        }));
+        setPackages(fetchedPackages);
+      } catch (error) {
+        console.error("Error fetching packages:", error);
+      }
+    };
+
+    fetchPackages();
+  }, []);
 
   // Simple filter simulation
-  const filteredPackages = mockPackages.filter(pkg => {
+  const filteredPackages = packages.filter(pkg => {
     if (pkg.status === 'Draft') return false; // Don't show drafts to customers
     const matchSearch = pkg.destination.toLowerCase().includes(searchTerm.toLowerCase()) ||
       pkg.title.toLowerCase().includes(searchTerm.toLowerCase());

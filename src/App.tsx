@@ -6,6 +6,7 @@ import Checkout from './pages/customer/Checkout';
 import AdminLayout from './pages/admin/AdminLayout';
 import Inventory from './pages/admin/Inventory';
 import Reports from './pages/admin/Reports';
+import MyBookings from './pages/customer/MyBookings';
 import { AuthProvider } from './components/auth/AuthProvider';
 
 function App() {
@@ -20,7 +21,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/package/:id" element={<PackageDetails />} />
               <Route path="/checkout/:id" element={<Checkout />} />
-              
+              <Route path="/my-bookings" element={<MyBookings />} />
+
               {/* Admin Dashboard */}
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Inventory />} />

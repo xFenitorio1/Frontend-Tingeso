@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Plane, LogIn, LogOut, LayoutDashboard, User, UserPlus } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
+import { Briefcase } from 'lucide-react';
 
 export default function Navbar() {
   const location = useLocation();
@@ -17,7 +18,7 @@ export default function Navbar() {
               <span className="font-jakarta font-bold text-xl text-primary">TravelAgency</span>
             </Link>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             {isAdmin ? (
               <>
@@ -36,10 +37,22 @@ export default function Navbar() {
                   Admin
                 </Link>
                 {isAuthenticated ? (
-                  <button onClick={() => logout()} className="text-gray-500 hover:text-red-600 flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium font-inter transition-colors">
-                    <LogOut className="h-4 w-4" />
-                    Cerrar Sesión
-                  </button>
+                  <div className="flex items-center gap-4"> {/* Contenedor para alinear ambos botones */}
+
+                    {/* Botón Mis Reservas */}
+                    <Link
+                      to="/my-bookings"
+                      className="text-gray-500 hover:text-blue-600 flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium font-inter transition-colors"
+                    >
+                      <Briefcase className="h-4 w-4" />
+                      Mis Reservas
+                    </Link>
+
+                    <button onClick={() => logout()} className="text-gray-500 hover:text-red-600 flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium font-inter transition-colors">
+                      <LogOut className="h-4 w-4" />
+                      Cerrar Sesión
+                    </button>
+                  </div>
                 ) : (
                   <>
                     <button onClick={() => register()} className="text-gray-500 hover:text-primary flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium font-inter transition-colors">
