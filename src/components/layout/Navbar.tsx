@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Plane, LogIn, LayoutDashboard, User } from 'lucide-react';
+import { Plane, LogIn, LogOut, LayoutDashboard, User, UserPlus } from 'lucide-react';
+import { useAuth } from '../auth/AuthProvider';
 
 export default function Navbar() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
+  const { isAuthenticated, login, logout, register } = useAuth();
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -33,10 +35,23 @@ export default function Navbar() {
                   <LayoutDashboard className="h-4 w-4" />
                   Admin
                 </Link>
-                <Link to="/login" className="bg-primary text-white hover:bg-opacity-90 flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium font-inter shadow-sm transition-all duration-200">
-                  <LogIn className="h-4 w-4" />
-                  Iniciar Sesión
-                </Link>
+                {isAuthenticated ? (
+                  <button onClick={() => logout()} className="text-gray-500 hover:text-red-600 flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium font-inter transition-colors">
+                    <LogOut className="h-4 w-4" />
+                    Cerrar Sesión
+                  </button>
+                ) : (
+                  <>
+                    <button onClick={() => register()} className="text-gray-500 hover:text-primary flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium font-inter transition-colors">
+                      <UserPlus className="h-4 w-4" />
+                      Crear Cuenta
+                    </button>
+                    <button onClick={() => login()} className="bg-primary text-white hover:bg-opacity-90 flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium font-inter shadow-sm transition-all duration-200 cursor-pointer">
+                      <LogIn className="h-4 w-4" />
+                      Iniciar Sesión
+                    </button>
+                  </>
+                )}
               </>
             )}
           </div>
