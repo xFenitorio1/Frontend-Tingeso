@@ -10,9 +10,9 @@ export default function Home() {
   // Simple filter simulation
   const filteredPackages = mockPackages.filter(pkg => {
     if (pkg.status === 'Draft') return false; // Don't show drafts to customers
-    const matchSearch = pkg.destination.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                        pkg.title.toLowerCase().includes(searchTerm.toLowerCase());
-    
+    const matchSearch = pkg.destination.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      pkg.title.toLowerCase().includes(searchTerm.toLowerCase());
+
     let matchPrice = true;
     if (priceRange === 'low') matchPrice = pkg.basePrice < 1000;
     if (priceRange === 'high') matchPrice = pkg.basePrice >= 1000;
@@ -30,31 +30,31 @@ export default function Home() {
             <path d="M0,100 C30,50 70,50 100,0 L100,100 Z" fill="white" />
           </svg>
         </div>
-        
+
         <div className="max-w-5xl mx-auto relative z-10 text-center">
           <h1 className="font-jakarta text-4xl md:text-5xl font-bold text-white mb-6">
             Descubre tu próxima aventura
           </h1>
           <p className="text-white/80 text-lg mb-10 max-w-2xl mx-auto">
-            Explora nuestros paquetes exclusivos y reserva tu viaje soñado con los mejores precios garantizados.
+            Explora nuestros hola paquetes exclusivos y reserva tu viaje soñado con los mejores precios garantizados.
           </p>
-          
+
           {/* Multi-criteria filters */}
           <div className="bg-white p-4 rounded-2xl shadow-lg flex flex-col md:flex-row gap-4 items-center max-w-4xl mx-auto">
             <div className="flex-1 w-full relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input 
-                type="text" 
-                placeholder="Destino o palabra clave" 
+              <input
+                type="text"
+                placeholder="Destino o palabra clave"
                 className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <div className="w-full md:w-48 relative">
               <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <select 
+              <select
                 className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none bg-white"
                 value={priceRange}
                 onChange={(e) => setPriceRange(e.target.value)}
@@ -75,7 +75,7 @@ export default function Home() {
       {/* Results Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
         <h2 className="font-jakarta text-2xl font-bold text-gray-900 mb-8">Paquetes Destacados</h2>
-        
+
         {filteredPackages.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredPackages.map(pkg => (
@@ -90,7 +90,7 @@ export default function Home() {
             </div>
             <h3 className="font-jakarta text-xl font-bold text-gray-900 mb-2">No se encontraron resultados</h3>
             <p className="text-gray-500 mb-6">No pudimos encontrar ningún paquete que coincida con tu búsqueda. Intenta ajustar los filtros.</p>
-            <button 
+            <button
               onClick={() => { setSearchTerm(''); setPriceRange(''); }}
               className="px-6 py-2 bg-primary/10 text-primary font-semibold rounded-lg hover:bg-primary/20 transition-colors"
             >
