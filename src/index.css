@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #1A2B4C;
+  --color-secondary: #F2994A;
+  --color-tertiary: #3F2600;
+  --color-neutral: #77777A;
+
+  --font-jakarta: "Plus Jakarta Sans", sans-serif;
+  --font-inter: "Inter", sans-serif;
+}
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
