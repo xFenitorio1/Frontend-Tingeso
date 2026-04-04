@@ -2,14 +2,13 @@ import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import { Plus, Edit2, Trash2, Loader2 } from 'lucide-react';
 import type { Package } from '../../types';
-import PackageForm from './PackageForm'; // Asegúrate de que la ruta sea correcta
+import PackageForm from './PackageForm';
 
 export default function Inventory() {
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Este estado sirve para disparar el useEffect cada vez que algo cambie
+  const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const fetchPackages = async () => {
@@ -20,9 +19,12 @@ export default function Inventory() {
         id: pkg.id.toString(),
         title: pkg.name,
         destination: pkg.destination,
+        description: pkg.description,
         basePrice: pkg.price,
         spotsTotal: pkg.totalCapacity,
         spotsLeft: pkg.availableSpots,
+        startDate: pkg.startDate,
+        endDate: pkg.endDate,
         status: pkg.status === 'AVAILABLE' ? 'Active' : pkg.status === 'SOLD_OUT' ? 'Sold Out' : 'Draft',
       }));
       setPackages(fetchedPackages);
@@ -33,7 +35,6 @@ export default function Inventory() {
     }
   };
 
-  // Se ejecuta al montar Y cada vez que refreshKey cambie
   useEffect(() => {
     fetchPackages();
   }, [refreshKey]);
@@ -47,6 +48,16 @@ export default function Inventory() {
         alert("No se pudo eliminar: El paquete puede tener reservas activas.");
       }
     }
+  };
+
+  const handleEdit = (pkg: Package) => {
+    setSelectedPackage(pkg);
+    setIsModalOpen(true);
+  };
+
+  const handleCreate = () => {
+    setSelectedPackage(null);
+    setIsModalOpen(true);
   };
 
   if (loading && packages.length === 0) {
@@ -66,18 +77,21 @@ export default function Inventory() {
           <p className="text-gray-500 mt-1">Gestión directa de la base de datos de TravelAgency.</p>
         </div>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={handleCreate}
           className="bg-primary text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-primary/90 transition-all shadow-md active:scale-95"
         >
           <Plus className="w-4 h-4" /> Nuevo Paquete
         </button>
       </div>
 
-      {/* COMPONENTE FORMULARIO SEPARADO */}
       <PackageForm
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedPackage(null);
+        }}
         onSuccess={() => setRefreshKey(prev => prev + 1)}
+        initialData={selectedPackage}
       />
 
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
@@ -117,7 +131,10 @@ export default function Inventory() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors">
+                      <button
+                        onClick={() => handleEdit(pkg)}
+                        className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                      >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
