@@ -7,6 +7,7 @@ import AdminLayout from './pages/admin/AdminLayout';
 import Inventory from './pages/admin/Inventory';
 import Reports from './pages/admin/Reports';
 import Promotions from './pages/admin/Promotions';
+import Bookings from './pages/admin/Bookings';
 import MyBookings from './pages/customer/MyBookings';
 import { AuthProvider } from './components/auth/AuthProvider';
 
@@ -29,6 +30,7 @@ function App() {
                 <Route index element={<Inventory />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="promotions" element={<Promotions />} />
+                <Route path="bookings" element={<Bookings />} />
               </Route>
             </Routes>
           </main>

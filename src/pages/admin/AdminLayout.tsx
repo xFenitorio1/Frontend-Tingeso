@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { Package, BarChart3, Settings, TicketPercent } from 'lucide-react'; // Agregamos TicketPercent
+import { Package, BarChart3, Settings, TicketPercent, CalendarCheck } from 'lucide-react';
 
 export default function AdminLayout() {
   return (
@@ -9,6 +9,7 @@ export default function AdminLayout() {
         <div className="p-6">
           <h2 className="text-xs uppercase font-bold text-gray-400 tracking-wider mb-4 italic">Administración</h2>
           <nav className="space-y-2">
+            {/* 1. Inventario */}
             <NavLink
               to="/admin"
               end
@@ -20,7 +21,18 @@ export default function AdminLayout() {
               <Package className="w-5 h-5" /> Inventario
             </NavLink>
 
-            {/* --- NUEVA OPCIÓN DE PROMOCIONES --- */}
+            {/* 2. NUEVA OPCIÓN: Gestión de Reservas */}
+            <NavLink
+              to="/admin/bookings"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+                }`
+              }
+            >
+              <CalendarCheck className="w-5 h-5" /> Gestión de Reservas
+            </NavLink>
+
+            {/* 3. Promociones */}
             <NavLink
               to="/admin/promotions"
               className={({ isActive }) =>
@@ -30,8 +42,8 @@ export default function AdminLayout() {
             >
               <TicketPercent className="w-5 h-5" /> Gestionar Promos
             </NavLink>
-            {/* ----------------------------------- */}
 
+            {/* 4. Reportes */}
             <NavLink
               to="/admin/reports"
               className={({ isActive }) =>
@@ -42,9 +54,11 @@ export default function AdminLayout() {
               <BarChart3 className="w-5 h-5" /> Reportes & Ventas
             </NavLink>
 
-            <a href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
-              <Settings className="w-5 h-5" /> Configuración
-            </a>
+            <div className="pt-4 mt-4 border-t border-gray-100">
+              <a href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                <Settings className="w-5 h-5" /> Configuración
+              </a>
+            </div>
           </nav>
         </div>
       </aside>
