@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { CheckCircle2, MapPin, Loader2 } from 'lucide-react';
-import api from '../../api/axios'; // Importamos tu axios configurado
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { CheckCircle2, MapPin, Loader2, ShieldAlert } from 'lucide-react';
+import api from '../../api/axios';
+import { useAuth } from '../../components/auth/AuthProvider';
 import type { Package } from '../../types';
 
 export default function PackageDetails() {
   const { id } = useParams();
+  const { isAuthenticated, login } = useAuth();
+
   const [pkg, setPkg] = useState<Package | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -13,11 +16,9 @@ export default function PackageDetails() {
     const fetchPackageDetail = async () => {
       try {
         setLoading(true);
-        // Llamamos al endpoint de un solo paquete por ID
         const response = await api.get(`/api/packages/${id}`);
         const p = response.data;
 
-        // Mapeamos el formato del backend al formato que espera tu componente
         const formattedPackage: Package = {
           id: p.id.toString(),
           title: p.name,
@@ -42,6 +43,13 @@ export default function PackageDetails() {
 
     if (id) fetchPackageDetail();
   }, [id]);
+
+  const handleBookingClick = (e: React.MouseEvent) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      login();
+    }
+  };
 
   if (loading) {
     return (
@@ -68,7 +76,6 @@ export default function PackageDetails() {
 
   return (
     <div className="bg-gray-50 min-h-screen py-8">
-      {/* ... El resto de tu JSX se mantiene exactamente igual ... */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
           <Link to="/" className="text-gray-500 hover:text-primary text-sm font-medium">
@@ -96,7 +103,7 @@ export default function PackageDetails() {
               <ul className="space-y-3">
                 {pkg.includes.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-3 text-gray-700">
-                    <CheckCircle2 className="w-6 h-6 text-success flex-shrink-0" />
+                    <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -112,9 +119,9 @@ export default function PackageDetails() {
                   <p className="text-4xl font-jakarta font-bold text-primary">${pkg.basePrice.toLocaleString()}</p>
                 </div>
                 {isSoldOut ? (
-                  <span className="bg-alert/10 text-alert px-3 py-1 rounded-full text-sm font-bold">Agotado</span>
+                  <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-bold">Agotado</span>
                 ) : (
-                  <span className="bg-success/10 text-success px-3 py-1 rounded-full text-sm font-bold">Disponible</span>
+                  <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm font-bold">Disponible</span>
                 )}
               </div>
 
@@ -125,20 +132,36 @@ export default function PackageDetails() {
                 </div>
                 <div className="flex justify-between text-sm py-3 border-b border-gray-100">
                   <span className="text-gray-600">Cupos restantes</span>
-                  <span className={`font-bold ${pkg.spotsLeft < 3 ? 'text-alert' : 'text-success'}`}>
+                  <span className={`font-bold ${pkg.spotsLeft < 3 ? 'text-red-500' : 'text-green-600'}`}>
                     {pkg.spotsLeft}
                   </span>
                 </div>
               </div>
 
+              {/* Aviso si no está logeado */}
+              {!isAuthenticated && !isSoldOut && (
+                <div className="mb-4 p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-3">
+                  <ShieldAlert className="w-5 h-5 text-blue-600 mt-0.5" />
+                  <p className="text-sm text-blue-700">
+                    Necesitas <strong>iniciar sesión</strong> para poder realizar una reserva en este paquete.
+                  </p>
+                </div>
+              )}
+
               <Link
                 to={isSoldOut ? "#" : `/checkout/${pkg.id}`}
+                onClick={handleBookingClick}
                 className={`block w-full py-4 text-center rounded-xl font-bold text-lg transition-all ${isSoldOut
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-secondary text-white hover:bg-secondary/90 shadow-md hover:shadow-lg'
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-secondary text-white hover:bg-secondary/90 shadow-md hover:shadow-lg'
                   }`}
               >
-                {isSoldOut ? 'Sin Disponibilidad' : 'Reservar Ahora'}
+                {isSoldOut
+                  ? 'Sin Disponibilidad'
+                  : isAuthenticated
+                    ? 'Reservar Ahora'
+                    : 'Inicia sesión para reservar'
+                }
               </Link>
             </div>
           </div>

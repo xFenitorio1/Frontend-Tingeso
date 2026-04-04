@@ -18,13 +18,13 @@ export default function PaymentModal({ isOpen, onClose, onConfirm, amount }: Pay
     if (!isOpen) return null;
 
     const handleCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value.replace(/\D/g, ''); // Solo números
+        const value = e.target.value.replace(/\D/g, '');
         const formatted = value.match(/.{1,4}/g)?.join(' ') || '';
         setCardNumber(formatted.substring(0, 19));
     };
 
     const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, ''); // Solo números
+        let value = e.target.value.replace(/\D/g, '');
         if (value.length > 2) {
             value = value.substring(0, 2) + '/' + value.substring(2, 4);
         }
@@ -51,9 +51,12 @@ export default function PaymentModal({ isOpen, onClose, onConfirm, amount }: Pay
                     <X className="w-5 h-5" />
                 </button>
 
-                <div className="mb-6">
-                    <h2 className="text-2xl font-jakarta font-bold text-gray-900 italic">Pago Seguro</h2>
-                    <p className="text-sm text-gray-500">Monto final: <span className="font-black text-primary text-lg">${amount.toLocaleString()}</span></p>
+                <div className="mb-6 bg-gray-50 p-4 rounded-2xl border border-gray-100 text-center">
+                    <h2 className="text-xl font-jakarta font-bold text-gray-900 italic">Pago Seguro</h2>
+                    <div className="mt-2">
+                        <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Total a debitar</p>
+                        <p className="text-4xl font-black text-primary">${amount.toLocaleString()}</p>
+                    </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -82,11 +85,11 @@ export default function PaymentModal({ isOpen, onClose, onConfirm, amount }: Pay
                     </div>
 
                     <button disabled={isProcessing} className="w-full bg-primary text-white py-4 rounded-2xl font-black text-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-3 mt-4 disabled:opacity-50">
-                        {isProcessing ? <Loader2 className="animate-spin h-6 w-6" /> : `PAGAR AHORA`}
+                        {isProcessing ? <Loader2 className="animate-spin h-6 w-6" /> : `CONFIRMAR PAGO`}
                     </button>
 
-                    <div className="flex items-center justify-center gap-2 text-[10px] text-gray-400 uppercase font-black tracking-widest pt-4">
-                        <ShieldCheck className="w-4 h-4 text-green-500" /> Transacción Protegida
+                    <div className="flex items-center justify-center gap-2 text-[10px] text-green-600 uppercase font-black tracking-widest pt-4">
+                        <ShieldCheck className="w-4 h-4" /> Descuentos de fidelidad aplicados
                     </div>
                 </form>
             </div>

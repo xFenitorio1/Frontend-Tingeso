@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
-import { Ticket, MapPin, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Ticket, MapPin, CheckCircle, Clock, AlertCircle, XCircle, CreditCard } from 'lucide-react';
+import PaymentModal from './PaymentModal'; // Asegúrate de que la ruta sea correcta
 
 const MyBookings = () => {
     const { keycloak, initialized } = useKeycloak();
@@ -8,33 +9,68 @@ const MyBookings = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchLocalBookings = async () => {
-            // Solo ejecutamos si el token existe (el JIT ya debió ocurrir en el login o primer acceso)
-            if (initialized && keycloak.token) {
-                try {
-                    const response = await fetch('http://localhost:8090/api/bookings/my-bookings', {
-                        headers: {
-                            'Authorization': `Bearer ${keycloak.token}`,
-                            'Content-Type': 'application/json'
-                        },
-                    });
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState(null);
 
-                    if (!response.ok) throw new Error("No se pudieron cargar las reservas locales.");
+    const fetchLocalBookings = async () => {
+        if (initialized && keycloak.token) {
+            try {
+                const response = await fetch('http://localhost:8090/api/bookings/my-bookings', {
+                    headers: {
+                        'Authorization': `Bearer ${keycloak.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                });
 
-                    const data = await response.json();
-                    setBookings(data);
-                    console.log(data);
-                } catch (err: any) {
-                    setError(err.message);
-                } finally {
-                    setLoading(false);
-                }
+                if (!response.ok) throw new Error("No se pudieron cargar las reservas.");
+
+                const data = await response.json();
+                setBookings(data);
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
             }
-        };
+        }
+    };
 
+    useEffect(() => {
         fetchLocalBookings();
     }, [initialized, keycloak.token]);
+
+    // Función para abrir el modal con la reserva seleccionada
+    const handleOpenPayment = (booking) => {
+        setSelectedBooking(booking);
+        setShowPaymentModal(true);
+    };
+
+    // Función que procesa el pago (PASO B del backend)
+    const handleConfirmPayment = async (paymentInfo: any) => {
+        try {
+            const response = await fetch('http://localhost:8090/api/payments', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${keycloak.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    booking: { id: selectedBooking.id },
+                    amount: selectedBooking.finalAmount,
+                    paymentMethod: 'Credit Card',
+                    transactionId: paymentInfo.transactionId
+                })
+            });
+
+            if (!response.ok) throw new Error("Error al procesar el pago.");
+
+            alert("¡Pago realizado con éxito!");
+            setShowPaymentModal(false);
+            fetchLocalBookings();
+        } catch (err: any) {
+            alert(err.message);
+            throw err;
+        }
+    };
 
     if (!initialized || loading) return <div className="text-center p-10 font-inter">Consultando base de datos local...</div>;
 
@@ -51,12 +87,12 @@ const MyBookings = () => {
                     <Ticket className="h-8 w-8 text-blue-600" />
                     Mis Reservas
                 </h1>
-                <p className="text-gray-500 mt-2">Historial      de viajes registrados en TravelAgency</p>
+                <p className="text-gray-500 mt-2">Historial de viajes registrados en TravelAgency</p>
             </header>
 
             {bookings.length === 0 ? (
                 <div className="bg-white border-2 border-dashed border-gray-200 rounded-2xl p-16 text-center">
-                    <p className="text-gray-400 text-lg">No encontramos reservas a tu nombre en nuestro sistema local.</p>
+                    <p className="text-gray-400 text-lg">No encontramos reservas a tu nombre.</p>
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -79,15 +115,43 @@ const MyBookings = () => {
                                     <p className="text-xl font-black text-blue-600">${booking.finalAmount.toLocaleString()}</p>
                                 </div>
 
-                                <div className={`px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-sm ${booking.status === 'PAID' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'
-                                    }`}>
-                                    {booking.status === 'PAID' ? <CheckCircle className="h-5 w-5" /> : <Clock className="h-5 w-5" />}
-                                    {booking.status === 'PAID' ? 'PAGADO' : 'PENDIENTE'}
+                                <div className="flex flex-col gap-2 items-end">
+                                    <div className={`px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-sm ${booking.status === 'PAID'
+                                        ? 'bg-green-50 text-green-600'
+                                        : booking.status === 'CANCELLED'
+                                            ? 'bg-red-50 text-red-600'
+                                            : 'bg-orange-50 text-orange-600'
+                                        }`}>
+                                        {booking.status === 'PAID' && <><CheckCircle className="h-5 w-5" /> <span>PAGADO</span></>}
+                                        {booking.status === 'CANCELLED' && <><XCircle className="h-5 w-5" /> <span>CANCELADO</span></>}
+                                        {booking.status === 'PENDING_PAYMENT' && <><Clock className="h-5 w-5" /> <span>PENDIENTE</span></>}
+                                    </div>
+
+                                    {/* BOTÓN DE PAGO DINÁMICO */}
+                                    {booking.status === 'PENDING_PAYMENT' && (
+                                        <button
+                                            onClick={() => handleOpenPayment(booking)}
+                                            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm"
+                                        >
+                                            <CreditCard className="h-4 w-4" />
+                                            Pagar Ahora
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
+            )}
+
+            {/* MODAL DE PAGO REUTILIZADO */}
+            {selectedBooking && (
+                <PaymentModal
+                    isOpen={showPaymentModal}
+                    onClose={() => setShowPaymentModal(false)}
+                    amount={selectedBooking.finalAmount}
+                    onConfirm={handleConfirmPayment}
+                />
             )}
         </div>
     );
