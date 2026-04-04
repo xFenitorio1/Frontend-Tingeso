@@ -1,12 +1,19 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Plane, LogIn, LogOut, LayoutDashboard, User, UserPlus } from 'lucide-react';
+import { Plane, LogIn, LogOut, LayoutDashboard, User, UserPlus, Briefcase, Settings } from 'lucide-react'; // Importamos Settings
 import { useAuth } from '../auth/AuthProvider';
-import { Briefcase } from 'lucide-react';
 
 export default function Navbar() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
   const { isAuthenticated, login, logout, register } = useAuth();
+
+  const handleManageAccount = () => {
+    const keycloakUrl = "http://localhost:9090";
+    const realm = "Tingeso";
+    const accountUrl = `${keycloakUrl}/realms/${realm}/account`;
+
+    window.open(accountUrl, "_blank");
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -37,9 +44,17 @@ export default function Navbar() {
                   Admin
                 </Link>
                 {isAuthenticated ? (
-                  <div className="flex items-center gap-4"> {/* Contenedor para alinear ambos botones */}
+                  <div className="flex items-center gap-4">
 
-                    {/* Botón Mis Reservas */}
+                    {/* Nuevo Botón Gestionar Mi Cuenta */}
+                    <button
+                      onClick={handleManageAccount}
+                      className="text-gray-500 hover:text-primary flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium font-inter transition-colors"
+                    >
+                      <Settings className="h-4 w-4" />
+                      Mi Cuenta
+                    </button>
+
                     <Link
                       to="/my-bookings"
                       className="text-gray-500 hover:text-blue-600 flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium font-inter transition-colors"
