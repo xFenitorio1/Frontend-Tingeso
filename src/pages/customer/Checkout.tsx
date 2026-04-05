@@ -13,10 +13,10 @@ import {
   Printer,
   FileText,
   Plane,
-  Download // Se agregó Download
+  Download
 } from 'lucide-react';
-import { toPng } from 'html-to-image'; // Importación html-to-image
-import jsPDF from 'jspdf'; // Importación jspdf
+import { toPng } from 'html-to-image';
+import jsPDF from 'jspdf';
 import api from '../../api/axios';
 import type { Package } from '../../types';
 import PaymentModal from './PaymentModal';
