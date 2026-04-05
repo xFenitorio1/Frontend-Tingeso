@@ -42,7 +42,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     keycloak.register();
   };
 
-  // 🔥 JIT sync (solo cuando esté autenticado)
   if (initialized && isAuthenticated) {
     api.get('/api/sincronizar-jit').catch(() => { });
   }
