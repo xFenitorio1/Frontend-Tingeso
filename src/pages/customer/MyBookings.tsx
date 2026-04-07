@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 import { Ticket, MapPin, CheckCircle, Clock, AlertCircle, XCircle, CreditCard } from 'lucide-react';
-import PaymentModal from './PaymentModal'; // Asegúrate de que la ruta sea correcta
+import PaymentModal from './PaymentModal';
+import api from '../../api/axios';
+
 
 const MyBookings = () => {
     const { keycloak, initialized } = useKeycloak();
@@ -14,20 +16,15 @@ const MyBookings = () => {
 
     const fetchLocalBookings = async () => {
         if (initialized && keycloak.token) {
+            setLoading(true);
             try {
-                const response = await fetch('http://localhost:8090/api/bookings/my-bookings', {
-                    headers: {
-                        'Authorization': `Bearer ${keycloak.token}`,
-                        'Content-Type': 'application/json'
-                    },
-                });
+                const response = await api.get('/api/bookings/my-bookings');
+                setBookings(response.data);
 
-                if (!response.ok) throw new Error("No se pudieron cargar las reservas.");
-
-                const data = await response.json();
-                setBookings(data);
             } catch (err: any) {
-                setError(err.message);
+                const errorMessage = err.response?.data?.message || "No se pudieron cargar las reservas.";
+                setError(errorMessage);
+                console.error("Error fetching bookings:", err);
             } finally {
                 setLoading(false);
             }
