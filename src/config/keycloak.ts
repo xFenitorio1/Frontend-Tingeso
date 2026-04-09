@@ -1,7 +1,10 @@
 import Keycloak from 'keycloak-js';
 
+const travelAgencyKeycloakServer = import.meta.env.VITE_TRAVELAGENCY_KEYCLOAK_SERVER
+const travelAgencyKeycloakPort = import.meta.env.VITE_TRAVELAGENCY_KEYCLOAK_PORT
+
 const keycloakConfig = {
-  url: 'http://localhost:9090',
+  url: `http://${travelAgencyKeycloakServer}:${travelAgencyKeycloakPort}`,
   realm: 'Tingeso',
   clientId: 'frontend-client',
 };
