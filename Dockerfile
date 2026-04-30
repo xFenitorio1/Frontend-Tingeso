@@ -1,18 +1,11 @@
-# Imagen base
-FROM node:22
-
-# Carpeta de trabajo dentro del contenedor
+FROM node:18-alpine AS build
 WORKDIR /app
-
-# Copiar archivos de dependencias
 COPY package*.json ./
 RUN npm install
-
-# Copiar el resto del código
 COPY . .
+RUN npm run build
 
-# Puerto que usa tu app
-EXPOSE 5173
-
-# Comando para iniciar
-CMD ["npm", "run", "dev", "--", "--host"]
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
