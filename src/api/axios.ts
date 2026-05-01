@@ -2,10 +2,9 @@ import axios from 'axios';
 import keycloak from '../config/keycloak';
 
 const travelAgencyBackendServer = import.meta.env.VITE_TRAVELAGENCY_BACKEND_SERVER
-const travelAgencyBackendPort = import.meta.env.VITE_TRAVELAGENCY_BACKEND_PORT
 
 const api = axios.create({
-  baseURL: `http://${travelAgencyBackendServer}:${travelAgencyBackendPort}`,
+  baseURL: `http://${travelAgencyBackendServer}`,
   headers: {
     'Content-Type': 'application/json',
   },
