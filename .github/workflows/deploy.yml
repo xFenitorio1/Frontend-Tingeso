@@ -21,3 +21,8 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/tingeso-frontend:latest
+          build-args: |
+            VITE_TRAVELAGENCY_BACKEND_SERVER=${{ vars.VITE_TRAVELAGENCY_BACKEND_SERVER }}
+            VITE_TRAVELAGENCY_BACKEND_PORT=${{ vars.VITE_TRAVELAGENCY_BACKEND_PORT }}
+            VITE_TRAVELAGENCY_KEYCLOAK_SERVER=${{ vars.VITE_TRAVELAGENCY_KEYCLOAK_SERVER }}
+            VITE_TRAVELAGENCY_KEYCLOAK_PORT=${{ vars.VITE_TRAVELAGENCY_KEYCLOAK_PORT }}
