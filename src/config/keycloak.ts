@@ -1,6 +1,6 @@
-// --- PARCHE FINAL PARA HTTP ---
+// --- PARCHE DE EMERGENCIA PARA HTTP ---
 if (typeof window !== 'undefined' && window.location.protocol === 'http:') {
-    // 1. UUID para evitar el primer error
+    // 1. UUID para evitar el error de generación de IDs
     if (!window.crypto.randomUUID) {
         Object.defineProperty(window.crypto, 'randomUUID', {
             value: () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -10,11 +10,17 @@ if (typeof window !== 'undefined' && window.location.protocol === 'http:') {
         });
     }
 
-    // 2. Engaño para Subtle: Creamos un objeto falso para que no dé TypeError
-    // pero no le damos la función 'digest', así Keycloak entiende que no puede usar PKCE
-    if (!window.crypto.subtle) {
+    // 2. Parchear Subtle y Digest para evitar el crash de PKCE
+    if (!window.crypto.subtle || Object.keys(window.crypto.subtle).length === 0) {
+        const fakeSubtle = {
+            digest: () => new Promise((resolve) => {
+                // Devolvemos un buffer vacío para que la librería no pueda generar el challenge
+                resolve(new ArrayBuffer(0));
+            })
+        };
+
         Object.defineProperty(window.crypto, 'subtle', {
-            value: {},
+            value: fakeSubtle,
             configurable: true,
             writable: true
         });
