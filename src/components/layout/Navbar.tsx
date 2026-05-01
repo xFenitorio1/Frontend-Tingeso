@@ -7,13 +7,13 @@ export default function Navbar() {
   const isAdmin = location.pathname.startsWith('/admin');
   const { isAuthenticated, login, logout, register } = useAuth();
 
-  const handleManageAccount = () => {
-    const keycloakUrl = "http://localhost:9090";
-    const realm = "Tingeso";
-    const accountUrl = `${keycloakUrl}/realms/${realm}/account`;
+const handleManageAccount = () => {
+  const keycloakServer = import.meta.env.VITE_TRAVELAGENCY_KEYCLOAK_SERVER;
+  const realm = "Tingeso";
+  const accountUrl = `http://${keycloakServer}/realms/${realm}/account`;
 
-    window.open(accountUrl, "_blank");
-  };
+  window.open(accountUrl, "_blank");
+};
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
