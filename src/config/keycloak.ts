@@ -1,5 +1,6 @@
-// --- INICIO DEL PARCHE PARA HTTP ---
+// --- PARCHE TOTAL PARA HTTP ---
 if (typeof window !== 'undefined' && window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
+    // Parche para randomUUID
     if (!window.crypto.randomUUID) {
         Object.defineProperty(window.crypto, 'randomUUID', {
             value: () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -8,12 +9,7 @@ if (typeof window !== 'undefined' && window.location.protocol === 'http:' && win
             })
         });
     }
-    
-    if (!window.crypto.subtle) {
-        (window.crypto as any).subtle = {} as any; 
-    }
 }
-// --- FIN DEL PARCHE ---
 
 import Keycloak from 'keycloak-js';
 
