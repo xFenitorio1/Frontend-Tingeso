@@ -1,6 +1,6 @@
-// --- PARCHE DEFINITIVO PARA HTTP ---
+// --- PARCHE FINAL PARA HTTP ---
 if (typeof window !== 'undefined' && window.location.protocol === 'http:') {
-    // 1. Arreglamos el UUID
+    // 1. UUID para evitar el primer error
     if (!window.crypto.randomUUID) {
         Object.defineProperty(window.crypto, 'randomUUID', {
             value: () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -10,16 +10,16 @@ if (typeof window !== 'undefined' && window.location.protocol === 'http:') {
         });
     }
 
-    // 2. Engañamos a Keycloak: si no hay HTTPS, "borramos" subtle 
-    // para que la librería entienda que no puede usar PKCE
-    if (window.crypto && (window.crypto as any).subtle) {
+    // 2. Engaño para Subtle: Creamos un objeto falso para que no dé TypeError
+    // pero no le damos la función 'digest', así Keycloak entiende que no puede usar PKCE
+    if (!window.crypto.subtle) {
         Object.defineProperty(window.crypto, 'subtle', {
-            value: undefined,
-            configurable: true
+            value: {},
+            configurable: true,
+            writable: true
         });
     }
 }
-// --- FIN DEL PARCHE ---
 
 import Keycloak from 'keycloak-js';
 
