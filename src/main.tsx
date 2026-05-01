@@ -14,8 +14,6 @@ createRoot(document.getElementById('root')!).render(
       initOptions={{
         onLoad: 'check-sso',
         checkLoginIframe: false,
-        flow: 'standard',
-        pkceMethod: undefined
       }}
       onEvent={(event, error) => {
         console.log('Keycloak Event:', event, 'Error:', error);
