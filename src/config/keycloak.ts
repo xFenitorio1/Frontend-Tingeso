@@ -1,12 +1,17 @@
 // --- INICIO DEL PARCHE PARA HTTP ---
-if (typeof window !== 'undefined' && !window.crypto.randomUUID) {
-  Object.defineProperty(window.crypto, 'randomUUID', {
-    value: () => {
-      return (([1e7] as any) + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c: any) =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-      );
+if (typeof window !== 'undefined' && window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
+    if (!window.crypto.randomUUID) {
+        Object.defineProperty(window.crypto, 'randomUUID', {
+            value: () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+                const r = Math.random() * 16 | 0;
+                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            })
+        });
     }
-  });
+    
+    if (!window.crypto.subtle) {
+        (window.crypto as any).subtle = {} as any; 
+    }
 }
 // --- FIN DEL PARCHE ---
 
