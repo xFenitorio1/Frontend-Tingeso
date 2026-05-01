@@ -14,8 +14,12 @@ createRoot(document.getElementById('root')!).render(
       initOptions={{
         onLoad: 'login-required',
         checkLoginIframe: false,
+        flow: 'standard',
         pkceMethod: 'S256'
       }}
+      onEvent={(event, error) => {
+        console.log('Keycloak Event:', event, 'Error:', error);
+        }}
     >
       <AuthProvider>
         <App />
