@@ -15,6 +15,7 @@ createRoot(document.getElementById('root')!).render(
         onLoad: 'check-sso',
         silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
         checkLoginIframe: false,
+        pkceMethod: 'S256',
         responseMode: 'query'
       }}
       onEvent={(event, error) => {
