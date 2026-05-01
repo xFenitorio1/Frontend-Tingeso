@@ -3,7 +3,7 @@ import Keycloak from 'keycloak-js';
 const travelAgencyKeycloakServer = import.meta.env.VITE_TRAVELAGENCY_KEYCLOAK_SERVER
 
 const keycloakConfig = {
-  url: `http://${travelAgencyKeycloakServer}`,
+  url: 'http://167.172.246.45/auth',
   realm: 'Tingeso',
   clientId: 'frontend-client',
 };
