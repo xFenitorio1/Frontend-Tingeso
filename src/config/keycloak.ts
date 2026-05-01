@@ -10,6 +10,5 @@ const keycloakConfig = {
 };
 
 const keycloak = new Keycloak(keycloakConfig);
-(window as any).keycloak = keycloak; // <--- ESTO expone el objeto a la consola
 
 export default keycloak;

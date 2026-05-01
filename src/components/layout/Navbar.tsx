@@ -10,7 +10,7 @@ export default function Navbar() {
 const handleManageAccount = () => {
   const keycloakServer = import.meta.env.VITE_TRAVELAGENCY_KEYCLOAK_SERVER;
   const realm = "Tingeso";
-  const accountUrl = `http://${keycloakServer}/realms/${realm}/account`;
+  const accountUrl = `http://${keycloakServer}/auth/realms/${realm}/account`;
 
   window.open(accountUrl, "_blank");
 };

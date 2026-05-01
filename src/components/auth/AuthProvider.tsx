@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, type ReactNode } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
 import api from '../../api/axios';
 
@@ -26,6 +26,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAuthenticated = !!keycloak.authenticated;
   const token = keycloak.token;
+  
+  useEffect(() => {
+    if (initialized) {
+      if (window.location.hash.includes('iss=') || window.location.search.includes('iss=')) {
+        window.history.replaceState(
+          null,
+          document.title,
+          window.location.pathname
+        );
+      }
+    }
+  }, [initialized]);
+
+  useEffect(() => {
+    if (initialized && isAuthenticated) {
+      api.get('/api/sincronizar-jit').catch(() => { });
+    }
+  }, [initialized, isAuthenticated]);
 
   const login = () => {
     if (!initialized) return;
@@ -41,10 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!initialized) return;
     keycloak.register();
   };
-
-  if (initialized && isAuthenticated) {
-    api.get('/api/sincronizar-jit').catch(() => { });
-  }
 
   if (!initialized) {
     return (
