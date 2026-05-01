@@ -44,7 +44,7 @@ const MyBookings = () => {
     // Función que procesa el pago (PASO B del backend)
     const handleConfirmPayment = async (paymentInfo: any) => {
         try {
-            const response = await fetch('http://localhost:8090/api/payments', {
+            const response = await api.post('/api/payments', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${keycloak.token}`,
