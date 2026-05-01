@@ -4,7 +4,7 @@ const travelAgencyKeycloakServer = import.meta.env.VITE_TRAVELAGENCY_KEYCLOAK_SE
 const travelAgencyKeycloakPort = import.meta.env.VITE_TRAVELAGENCY_KEYCLOAK_PORT
 
 const keycloakConfig = {
-  url: `http://${travelAgencyKeycloakServer}:${travelAgencyKeycloakPort}`,
+  url: `http://${travelAgencyKeycloakServer}`,
   realm: 'Tingeso',
   clientId: 'frontend-client',
 };
