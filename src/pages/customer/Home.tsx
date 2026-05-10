@@ -63,7 +63,7 @@ export default function Home() {
             Descubre tu próxima aventura
           </h1>
           <p className="text-white/80 text-lg mb-10 max-w-2xl mx-auto">
-            Explora nuestros hola paquetes exclusivos y reserva tu viaje soñado con los mejores precios garantizados.
+            Explora nuestros paquetes exclusivos y reserva tu viaje soñado con los mejores precios garantizados.
           </p>
 
           {/* Multi-criteria filters */}
