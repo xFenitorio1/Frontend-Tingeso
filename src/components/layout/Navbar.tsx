@@ -10,7 +10,7 @@ export default function Navbar() {
   const isInAdminPath = location.pathname.startsWith('/admin');
 
   // Verificamos si el usuario tiene el rol 'admin' en Keycloak
-  const isUserAdmin = isAuthenticated && keycloak?.hasRealmRole('admin');
+  const isUserAdmin = isAuthenticated && keycloak?.hasRealmRole('ADMIN');
 
   const handleManageAccount = () => {
     const keycloakServer = import.meta.env.VITE_TRAVELAGENCY_KEYCLOAK_SERVER;
