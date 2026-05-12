@@ -53,12 +53,6 @@ export default function AdminLayout() {
             >
               <BarChart3 className="w-5 h-5" /> Reportes & Ventas
             </NavLink>
-
-            <div className="pt-4 mt-4 border-t border-gray-100">
-              <a href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
-                <Settings className="w-5 h-5" /> Configuración
-              </a>
-            </div>
           </nav>
         </div>
       </aside>
