@@ -30,7 +30,7 @@ const MAX_DISCOUNT_LIMIT = 0.25;
 export default function Checkout() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const receiptRef = useRef<HTMLDivElement>(null); // Referencia para capturar
+  const receiptRef = useRef<HTMLDivElement>(null);
 
   const [pkg, setPkg] = useState<Package | null>(null);
   const [fidelityData, setFidelityData] = useState({
@@ -43,10 +43,10 @@ export default function Checkout() {
 
   const [loading, setLoading] = useState(true);
   const [isCreatingBooking, setIsCreatingBooking] = useState(false);
-  const [passengers, setPassengers] = useState(1);
+  const [passengers, setPassengers] = useState<number | ''>(1);
   const [showPayment, setShowPayment] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false); // Estado para el feedback de descarga
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     const initCheckout = async () => {
@@ -85,11 +85,11 @@ export default function Checkout() {
   }, [id]);
 
   // --- LÓGICA DE SIMULACIÓN ---
-  const subtotal = pkg ? pkg.basePrice * passengers : 0;
+  const subtotal = pkg ? pkg.basePrice * (typeof passengers === 'number' ? passengers : 0) : 0;
   const simulatedDetails: string[] = [];
   let currentPct = 0;
 
-  if (passengers >= MIN_PASSENGERS_GROUP) {
+  if (typeof passengers === 'number' && passengers >= MIN_PASSENGERS_GROUP) {
     currentPct += DISCOUNT_PCT_GROUP;
     simulatedDetails.push(`${DISCOUNT_PCT_GROUP * 100}% - Descuento por grupo (4+ personas)`);
   }
@@ -117,7 +117,7 @@ export default function Checkout() {
       setIsCreatingBooking(true);
       const response = await api.post('/api/bookings', {
         travelPackage: { id: parseInt(pkg!.id) },
-        passengerCount: passengers
+        passengerCount: passengers || 1
       });
       setBookingData(response.data);
       setShowPayment(true);
@@ -215,7 +215,7 @@ export default function Checkout() {
               </div>
               <div>
                 <p className="text-[10px] font-black text-gray-400 uppercase mb-1">Pasajeros</p>
-                <p className="font-bold text-gray-800">{passengers} persona(s)</p>
+                <p className="font-bold text-gray-800">{passengers || 1} persona(s)</p>
               </div>
               <div>
                 <p className="text-[10px] font-black text-gray-400 uppercase mb-1">Monto Pagado</p>
@@ -272,9 +272,32 @@ export default function Checkout() {
                     <Users size={16} /> Pasajeros para esta aventura
                   </label>
                   <div className="flex items-center bg-gray-50 rounded-2xl p-2 border border-gray-200 w-fit">
-                    <button onClick={() => setPassengers(p => Math.max(1, p - 1))} disabled={showPayment} className="w-14 h-14 rounded-xl bg-white shadow-sm flex items-center justify-center text-2xl font-bold hover:bg-gray-100 transition-colors">-</button>
-                    <span className="text-3xl font-black w-20 text-center text-primary">{passengers}</span>
-                    <button onClick={() => setPassengers(p => Math.min(pkg.spotsLeft, p + 1))} disabled={passengers >= pkg.spotsLeft || showPayment} className="w-14 h-14 rounded-xl bg-white shadow-sm flex items-center justify-center text-2xl font-bold hover:bg-gray-100 transition-colors">+</button>
+                    <button onClick={() => setPassengers(p => Math.max(1, (typeof p === 'number' ? p : 1) - 1))} disabled={showPayment} className="w-14 h-14 rounded-xl bg-white shadow-sm flex items-center justify-center text-2xl font-bold hover:bg-gray-100 transition-colors">-</button>
+                    <input 
+                      type="number"
+                      min="1"
+                      max={pkg.spotsLeft}
+                      value={passengers}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === '') {
+                          setPassengers('');
+                        } else {
+                          const num = parseInt(val, 10);
+                          if (!isNaN(num)) {
+                            setPassengers(Math.min(pkg.spotsLeft, num));
+                          }
+                        }
+                      }}
+                      onBlur={() => {
+                        if (passengers === '' || passengers < 1) {
+                          setPassengers(1);
+                        }
+                      }}
+                      disabled={showPayment}
+                      className="text-3xl font-black w-24 text-center text-primary bg-transparent outline-none border-none p-0 m-0 focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                    <button onClick={() => setPassengers(p => Math.min(pkg.spotsLeft, (typeof p === 'number' ? p : 1) + 1))} disabled={typeof passengers === 'number' && passengers >= pkg.spotsLeft || showPayment} className="w-14 h-14 rounded-xl bg-white shadow-sm flex items-center justify-center text-2xl font-bold hover:bg-gray-100 transition-colors">+</button>
                   </div>
                 </div>
 
@@ -308,7 +331,7 @@ export default function Checkout() {
 
               <div className="space-y-5 mb-8">
                 <div className="flex justify-between text-sm opacity-80 font-medium">
-                  <span>Subtotal ({passengers} personas)</span>
+                  <span>Subtotal ({passengers || 0} personas)</span>
                   <span className="font-mono">${subtotal.toLocaleString()}</span>
                 </div>
 
@@ -340,7 +363,7 @@ export default function Checkout() {
               </div>
 
               {!showPayment ? (
-                <button onClick={handleCreateBooking} disabled={isCreatingBooking} className="w-full bg-secondary hover:bg-secondary/90 text-white py-5 rounded-2xl font-black text-xl shadow-lg transition-all flex items-center justify-center gap-3">
+                <button onClick={handleCreateBooking} disabled={isCreatingBooking || passengers === '' || passengers < 1} className="w-full bg-secondary hover:bg-secondary/90 text-white py-5 rounded-2xl font-black text-xl shadow-lg transition-all flex items-center justify-center gap-3">
                   {isCreatingBooking ? <Loader2 className="animate-spin" /> : 'CONFIRMAR VIAJE'}
                 </button>
               ) : (

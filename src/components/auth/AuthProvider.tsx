@@ -9,6 +9,7 @@ interface AuthContextType {
   logout: () => void;
   register: () => void;
   isInitialized: boolean;
+  keycloak: any;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -26,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAuthenticated = !!keycloak.authenticated;
   const token = keycloak.token;
-  
+
   useEffect(() => {
     if (initialized) {
       if (window.location.hash.includes('iss=') || window.location.search.includes('iss=')) {
@@ -77,6 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         register,
         isInitialized: initialized,
+        keycloak,
       }}
     >
       {children}

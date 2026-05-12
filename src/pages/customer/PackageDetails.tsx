@@ -28,7 +28,7 @@ export default function PackageDetails() {
           spotsTotal: p.totalCapacity,
           spotsLeft: p.availableSpots,
           imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80',
-          includes: ['Vuelo aéreo', 'Alojamiento', 'Desayuno'],
+          includes: ['Vuelo', 'Alojamiento', 'Desayuno'],
           status: p.status === 'AVAILABLE' ? 'Active' : p.status === 'SOLD_OUT' ? 'Sold Out' : 'Draft',
         };
 

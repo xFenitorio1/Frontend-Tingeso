@@ -61,6 +61,19 @@ const MyBookings = () => {
         }
     }
 
+    const handleCancelBooking = async (bookingId: number) => {
+        if (!window.confirm('¿Estás seguro de que deseas cancelar esta reserva? Esta acción liberará tus cupos y no se puede deshacer.')) return;
+        
+        try {
+            await api.post(`/api/bookings/${bookingId}/cancel`);
+            alert("Reserva cancelada con éxito.");
+            fetchLocalBookings();
+        } catch (err: any) {
+            const errorMessage = err.response?.data?.error || "Error al cancelar la reserva.";
+            alert(errorMessage);
+        }
+    };
+
     if (!initialized || loading) return <div className="text-center p-10 font-inter">Consultando base de datos local...</div>;
 
     if (error) return (
@@ -120,10 +133,21 @@ const MyBookings = () => {
                                     {booking.status === 'PENDING_PAYMENT' && (
                                         <button
                                             onClick={() => handleOpenPayment(booking)}
-                                            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm"
+                                            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm w-full justify-center"
                                         >
                                             <CreditCard className="h-4 w-4" />
                                             Pagar Ahora
+                                        </button>
+                                    )}
+
+                                    {/* BOTÓN DE CANCELAR RESERVA */}
+                                    {(booking.status === 'PAID' || booking.status === 'PENDING_PAYMENT') && (
+                                        <button
+                                            onClick={() => handleCancelBooking(booking.id)}
+                                            className="flex items-center gap-2 bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-200 transition-colors shadow-sm mt-1 w-full justify-center"
+                                        >
+                                            <XCircle className="h-4 w-4" />
+                                            Cancelar Reserva
                                         </button>
                                     )}
                                 </div>
