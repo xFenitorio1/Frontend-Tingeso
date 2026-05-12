@@ -41,33 +41,25 @@ const MyBookings = () => {
         setShowPaymentModal(true);
     };
 
-    // Función que procesa el pago (PASO B del backend)
+    // Función que procesa el pago
     const handleConfirmPayment = async (paymentInfo: any) => {
         try {
             const response = await api.post('/api/payments', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${keycloak.token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    booking: { id: selectedBooking.id },
-                    amount: selectedBooking.finalAmount,
-                    paymentMethod: 'Credit Card',
-                    transactionId: paymentInfo.transactionId
-                })
+                booking: { id: selectedBooking.id },
+                amount: selectedBooking.finalAmount,
+                paymentMethod: 'Credit Card',
+                transactionId: paymentInfo.transactionId
             });
-
-            if (!response.ok) throw new Error("Error al procesar el pago.");
 
             alert("¡Pago realizado con éxito!");
             setShowPaymentModal(false);
             fetchLocalBookings();
         } catch (err: any) {
-            alert(err.message);
+            const message = err.response?.data?.message || "Error al procesar el pago.";
+            alert(message);
             throw err;
         }
-    };
+    }
 
     if (!initialized || loading) return <div className="text-center p-10 font-inter">Consultando base de datos local...</div>;
 

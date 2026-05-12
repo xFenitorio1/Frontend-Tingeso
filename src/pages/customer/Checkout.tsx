@@ -144,7 +144,7 @@ export default function Checkout() {
     }
   };
 
-  // NUEVA FUNCIÓN: Generación de PDF con html-to-image
+  // Generación de PDF con html-to-image
   const handleDownloadReceipt = async () => {
     if (!receiptRef.current) return;
     setIsDownloading(true);
